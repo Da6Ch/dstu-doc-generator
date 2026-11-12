@@ -7,36 +7,67 @@ import { Download, FileDown, Loader2 } from "lucide-react";
 
 interface MermaidBlockProps {
   code: string;
+  streaming: boolean;
 }
 
-/** Рендерить один блок Mermaid у SVG на клієнті */
-function MermaidBlock({ code }: MermaidBlockProps) {
+/**
+ * Рендерить діаграму Mermaid. Поки документ ще генерується, код діаграми
+ * неповний і містить синтаксичні помилки, тому рендеринг відкладається до
+ * завершення потоку. Якщо діаграма некоректна, показуємо її код замість
+ * помилки, а службові елементи Mermaid прибираємо зі сторінки.
+ */
+function MermaidBlock({ code, streaming }: MermaidBlockProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    if (streaming) return;
     let cancelled = false;
-    import("mermaid").then(async (mermaidModule) => {
-      const mermaid = mermaidModule.default;
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+    setFailed(false);
+
+    (async () => {
+      const mermaid = (await import("mermaid")).default;
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: "dark",
+        securityLevel: "strict",
+      });
+      const id = `mermaid-${Math.random().toString(36).slice(2)}`;
       try {
-        const id = `mermaid-${Math.random().toString(36).slice(2)}`;
+        const valid = await mermaid.parse(code, { suppressErrors: true });
+        if (!valid) throw new Error("invalid mermaid syntax");
         const { svg } = await mermaid.render(id, code);
         if (!cancelled && ref.current) ref.current.innerHTML = svg;
-      } catch (e) {
-        if (!cancelled) setError((e as Error).message);
+      } catch {
+        document.getElementById(`d${id}`)?.remove();
+        document.getElementById(id)?.remove();
+        if (!cancelled) setFailed(true);
       }
-    });
+    })();
+
     return () => {
       cancelled = true;
     };
-  }, [code]);
+  }, [code, streaming]);
 
-  if (error) {
+  if (streaming) {
     return (
-      <pre className="text-xs text-red-400 bg-red-950/30 p-3 rounded">
-        Помилка рендерингу діаграми: {error}
-      </pre>
+      <div className="my-4 text-xs text-slate-500">
+        Діаграма з'явиться після завершення генерації...
+      </div>
+    );
+  }
+  if (failed) {
+    return (
+      <div className="my-4 rounded-md border border-slate-700 bg-slate-950/60 p-3">
+        <p className="mb-2 text-xs text-amber-400">
+          Діаграму не вдалося відобразити (модель згенерувала некоректний
+          синтаксис). Код діаграми:
+        </p>
+        <div className="whitespace-pre-wrap font-mono text-xs text-slate-300">
+          {code}
+        </div>
+      </div>
     );
   }
   return <div ref={ref} className="my-4 flex justify-center" />;
@@ -91,7 +122,12 @@ export default function DocumentReader({
             code({ className, children, ...props }) {
               const match = /language-mermaid/.exec(className ?? "");
               if (match) {
-                return <MermaidBlock code={String(children).trim()} />;
+                return (
+                  <MermaidBlock
+                    code={String(children).trim()}
+                    streaming={!!isStreaming}
+                  />
+                );
               }
               return (
                 <code className={className} {...props}>

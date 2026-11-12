@@ -21,11 +21,11 @@ export default function HomePage() {
         </span>
       </div>
       <h1 className="text-3xl md:text-4xl font-bold text-slate-100 mb-3 text-center">
-        Автоматичне формування проєктної документації за ДСТУ
+        Автоматичне формування проєктної документації ПЗ
       </h1>
       <p className="text-slate-400 max-w-xl text-center mb-10">
         Вкажіть публічний GitHub-репозиторій — система проаналізує код і
-        згенерує документацію відповідно до стандартів ЄСПД серії 19.
+        згенерує документацію за стандартами ISO/IEC/IEEE: специфікація вимог, опис архітектури, документація користувача.
       </p>
       <RepoInput onValidated={handleValidated} />
     </main>

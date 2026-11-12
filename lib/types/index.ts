@@ -1,14 +1,14 @@
 // lib/types/index.ts
 
-/** Ідентифікатори підтримуваних артефактів ДСТУ/ЄСПД серії 19 */
-export type DstuStandardId =
-  | "dstu-19201" // Технічне завдання
-  | "dstu-19402" // Опис програми
-  | "dstu-19404" // Пояснювальна записка
-  | "dstu-19505"; // Керівництво системного програміста
+/** Ідентифікатори підтримуваних типів документів */
+export type DocStandardId =
+  | "iso-29148" // Специфікація вимог до ПЗ (SRS)
+  | "iso-42010" // Опис архітектури
+  | "iso-26514" // Документація для користувачів та адміністраторів
+  | "espd-19404"; // Пояснювальна записка (ЄСПД)
 
-export interface DstuStandardMeta {
-  id: DstuStandardId;
+export interface DocStandardMeta {
+  id: DocStandardId;
   code: string;
   title: string;
   description: string;
@@ -42,15 +42,15 @@ export interface RepoSnapshot {
 export interface GenerationRequest {
   repoUrl: string;
   branch?: string;
-  standards: DstuStandardId[];
+  standards: DocStandardId[];
 }
 
 /** Подія SSE, яку бекенд надсилає клієнту під час генерації */
 export type GenerationEvent =
   | { type: "status"; stage: string; message: string }
   | { type: "tree"; tree: RepoTreeNode[] }
-  | { type: "doc-start"; standard: DstuStandardId; title: string }
-  | { type: "doc-chunk"; standard: DstuStandardId; delta: string }
-  | { type: "doc-end"; standard: DstuStandardId }
+  | { type: "doc-start"; standard: DocStandardId; title: string }
+  | { type: "doc-chunk"; standard: DocStandardId; delta: string }
+  | { type: "doc-end"; standard: DocStandardId }
   | { type: "error"; message: string }
   | { type: "done" };

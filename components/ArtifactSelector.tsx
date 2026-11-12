@@ -1,19 +1,19 @@
 "use client";
 
 import { FileText } from "lucide-react";
-import { DSTU_STANDARDS } from "@/lib/llm/standards";
-import type { DstuStandardId } from "@/lib/types";
+import { DOC_STANDARDS } from "@/lib/llm/standards";
+import type { DocStandardId } from "@/lib/types";
 
 interface ArtifactSelectorProps {
-  selected: DstuStandardId[];
-  onChange: (selected: DstuStandardId[]) => void;
+  selected: DocStandardId[];
+  onChange: (selected: DocStandardId[]) => void;
 }
 
 export default function ArtifactSelector({
   selected,
   onChange,
 }: ArtifactSelectorProps) {
-  function toggle(id: DstuStandardId) {
+  function toggle(id: DocStandardId) {
     onChange(
       selected.includes(id)
         ? selected.filter((s) => s !== id)
@@ -23,7 +23,7 @@ export default function ArtifactSelector({
 
   return (
     <div className="w-full max-w-2xl space-y-3">
-      {Object.values(DSTU_STANDARDS).map((standard) => {
+      {Object.values(DOC_STANDARDS).map((standard) => {
         const checked = selected.includes(standard.id);
         return (
           <label

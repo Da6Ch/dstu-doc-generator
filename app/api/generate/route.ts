@@ -1,7 +1,7 @@
 // app/api/generate/route.ts
 //
 // Головний ендпоінт генерації документації. Приймає посилання на
-// репозиторій та обрані стандарти ДСТУ, виконує пайплайн
+// репозиторій та обрані типи документів, виконує пайплайн
 // (клонування -> фільтрація -> дайджест -> генерація для кожного
 // документа) і транслює прогрес та текст клієнту через Server-Sent Events.
 
@@ -10,7 +10,7 @@ import { cloneRepo } from "@/lib/git/cloneRepo";
 import { collectRepoFiles } from "@/lib/git/filterFiles";
 import { buildRepoDigest } from "@/lib/git/buildDigest";
 import { PROMPT_BUILDERS } from "@/lib/llm/prompts";
-import { DSTU_STANDARDS } from "@/lib/llm/standards";
+import { DOC_STANDARDS } from "@/lib/llm/standards";
 import { streamGeminiText } from "@/lib/llm/geminiClient";
 import type { GenerationEvent, GenerationRequest } from "@/lib/types";
 
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         for (const standardId of body.standards) {
           if (abortController.signal.aborted) break;
 
-          const meta = DSTU_STANDARDS[standardId];
+          const meta = DOC_STANDARDS[standardId];
           send({
             type: "doc-start",
             standard: standardId,
@@ -100,9 +100,14 @@ export async function POST(req: NextRequest) {
 
         send({ type: "done" });
       } catch (err) {
+        const e = err as Error & { cause?: { code?: string; message?: string } };
+        console.error("Помилка генерації:", err);
+        const cause = e.cause?.code ?? e.cause?.message;
         send({
           type: "error",
-          message: (err as Error).message ?? "Невідома помилка генерації",
+          message:
+            (e.message ?? "Невідома помилка генерації") +
+            (cause ? ` (причина: ${cause})` : ""),
         });
       } finally {
         await cleanup?.();

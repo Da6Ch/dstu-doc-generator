@@ -1,24 +1,20 @@
 // lib/llm/prompts/index.ts
 
-import type { DstuStandardId } from "@/lib/types";
-import { buildDstu19201Prompt } from "./dstu19201";
-import { buildDstu19402Prompt } from "./dstu19402";
-import { buildDstu19404Prompt } from "./dstu19404";
-import { buildDstu19505Prompt } from "./dstu19505";
+import type { DocStandardId } from "@/lib/types";
+import type { PromptBuilderParams } from "./common";
+import { buildIso29148Prompt } from "./iso29148";
+import { buildIso42010Prompt } from "./iso42010";
+import { buildIso26514Prompt } from "./iso26514";
+import { buildEspd19404Prompt } from "./espd19404";
 
-export interface PromptBuilderParams {
-  owner: string;
-  repo: string;
-  digest: string;
-  readme?: string;
-}
+export type { PromptBuilderParams };
 
 export const PROMPT_BUILDERS: Record<
-  DstuStandardId,
+  DocStandardId,
   (params: PromptBuilderParams) => string
 > = {
-  "dstu-19201": buildDstu19201Prompt,
-  "dstu-19402": buildDstu19402Prompt,
-  "dstu-19404": buildDstu19404Prompt,
-  "dstu-19505": buildDstu19505Prompt,
+  "iso-29148": buildIso29148Prompt,
+  "iso-42010": buildIso42010Prompt,
+  "iso-26514": buildIso26514Prompt,
+  "espd-19404": buildEspd19404Prompt,
 };

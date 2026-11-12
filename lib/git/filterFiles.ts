@@ -69,6 +69,13 @@ const CODE_EXTENSIONS: Record<string, string> = {
   ".sql": "sql",
 };
 
+// Файли без розширення, які варто включати в аналіз
+const EXTENSIONLESS_FILES: Record<string, string> = {
+  readme: "markdown",
+  dockerfile: "dockerfile",
+  makefile: "makefile",
+};
+
 const MAX_FILE_BYTES = 60_000; // обрізаємо надто великі файли
 const MAX_TOTAL_FILES = 400; // запобіжник для величезних репозиторіїв
 
@@ -122,8 +129,9 @@ export async function collectRepoFiles(
       if (ig.ignores(entryRel)) continue;
       if (EXCLUDED_FILE_PATTERNS.some((re) => re.test(entry))) continue;
 
-      const ext = entry.slice(entry.lastIndexOf(".")).toLowerCase();
-      const language = CODE_EXTENSIONS[ext];
+      const dot = entry.lastIndexOf(".");
+      const ext = dot > 0 ? entry.slice(dot).toLowerCase() : "";
+      const language = CODE_EXTENSIONS[ext] ?? EXTENSIONLESS_FILES[entry.toLowerCase()];
 
       nodes.push({ name: entry, path: entryRel, type: "file" });
 
@@ -137,7 +145,7 @@ export async function collectRepoFiles(
           "\n/* ...обрізано для аналізу... */";
       }
 
-      if (/^readme\.md$/i.test(entry) && !relPath) {
+      if (/^readme(\.md|\.txt)?$/i.test(entry) && !relPath) {
         readme = content;
       }
 

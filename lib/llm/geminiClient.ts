@@ -6,7 +6,7 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const MODEL_NAME = process.env.GEMINI_MODEL ?? "gemini-flash-latest";
+const MODEL_NAME = process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite";
 
 let client: GoogleGenAI | null = null;
 

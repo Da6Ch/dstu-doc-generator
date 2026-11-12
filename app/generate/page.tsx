@@ -5,9 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { Play, FolderTree } from "lucide-react";
 import ArtifactSelector from "@/components/ArtifactSelector";
 import DocumentReader from "@/components/DocumentReader";
-import { DSTU_STANDARDS } from "@/lib/llm/standards";
+import { DOC_STANDARDS } from "@/lib/llm/standards";
 import type {
-  DstuStandardId,
+  DocStandardId,
   GenerationEvent,
   RepoTreeNode,
 } from "@/lib/types";
@@ -33,8 +33,8 @@ function GeneratePageInner() {
   const repoUrl = searchParams.get("repoUrl") ?? "";
   const branch = searchParams.get("branch") ?? "main";
 
-  const [selected, setSelected] = useState<DstuStandardId[]>([
-    "dstu-19402",
+  const [selected, setSelected] = useState<DocStandardId[]>([
+    "iso-42010",
   ]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
@@ -43,7 +43,7 @@ function GeneratePageInner() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const orderedStandards = useMemo(
-    () => selected.map((id) => DSTU_STANDARDS[id]),
+    () => selected.map((id) => DOC_STANDARDS[id]),
     [selected]
   );
 
