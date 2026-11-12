@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     fontSize: 24, // 12pt у half-points
   });
 
-  return new Response(buffer as Buffer, {
+  return new Response(new Uint8Array(buffer as ArrayBuffer), {
     headers: {
       "Content-Type":
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
