@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Download, FileDown, Loader2 } from "lucide-react";
+import { useIsDark } from "./ThemeToggle";
 
 interface MermaidBlockProps {
   code: string;
@@ -19,6 +20,7 @@ interface MermaidBlockProps {
 function MermaidBlock({ code, streaming }: MermaidBlockProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
+  const dark = useIsDark();
 
   useEffect(() => {
     if (streaming) return;
@@ -29,7 +31,7 @@ function MermaidBlock({ code, streaming }: MermaidBlockProps) {
       const mermaid = (await import("mermaid")).default;
       mermaid.initialize({
         startOnLoad: false,
-        theme: "dark",
+        theme: dark ? "dark" : "default",
         securityLevel: "strict",
       });
       const id = `mermaid-${Math.random().toString(36).slice(2)}`;
@@ -48,7 +50,7 @@ function MermaidBlock({ code, streaming }: MermaidBlockProps) {
     return () => {
       cancelled = true;
     };
-  }, [code, streaming]);
+  }, [code, streaming, dark]);
 
   if (streaming) {
     return (
@@ -59,12 +61,12 @@ function MermaidBlock({ code, streaming }: MermaidBlockProps) {
   }
   if (failed) {
     return (
-      <div className="my-4 rounded-md border border-slate-700 bg-slate-950/60 p-3">
-        <p className="mb-2 text-xs text-amber-400">
+      <div className="my-4 rounded-md border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-950/60 p-3">
+        <p className="mb-2 text-xs text-amber-700 dark:text-amber-400">
           Діаграму не вдалося відобразити (модель згенерувала некоректний
           синтаксис). Код діаграми:
         </p>
-        <div className="whitespace-pre-wrap font-mono text-xs text-slate-300">
+        <div className="whitespace-pre-wrap font-mono text-xs text-slate-700 dark:text-slate-300">
           {code}
         </div>
       </div>
@@ -89,33 +91,33 @@ export default function DocumentReader({
   onExportDocx,
 }: DocumentReaderProps) {
   return (
-    <div className="rounded-xl border border-slate-700 bg-slate-900/60 overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-slate-700 bg-slate-800/50">
-        <h3 className="font-semibold text-slate-100 flex items-center gap-2">
+    <div className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+        <h3 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
           {title}
           {isStreaming && (
-            <Loader2 size={14} className="animate-spin text-indigo-400" />
+            <Loader2 size={14} className="animate-spin text-indigo-600 dark:text-indigo-400" />
           )}
         </h3>
         <div className="flex gap-2">
           <button
             onClick={onDownloadMarkdown}
             disabled={isStreaming}
-            className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-slate-200"
+            className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 disabled:opacity-40 text-slate-800 dark:text-slate-200"
           >
             <Download size={13} /> .md
           </button>
           <button
             onClick={onExportDocx}
             disabled={isStreaming}
-            className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-slate-200"
+            className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 disabled:opacity-40 text-slate-800 dark:text-slate-200"
           >
             <FileDown size={13} /> .docx
           </button>
         </div>
       </div>
 
-      <div className="prose prose-invert prose-slate max-w-none px-6 py-5 text-sm">
+      <div className="prose dark:prose-invert prose-slate max-w-none px-6 py-5 text-sm">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{

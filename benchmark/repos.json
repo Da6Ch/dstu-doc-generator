@@ -1,0 +1,9 @@
+[
+  { "id": "slugify",  "url": "https://github.com/sindresorhus/slugify", "language": "JavaScript", "expectedClass": "S", "note": "невелика бібліотека, мало файлів" },
+  { "id": "next-learn", "url": "https://github.com/vercel/next-learn", "language": "TypeScript", "expectedClass": "M", "note": "навчальні застосунки Next.js" },
+  { "id": "express",  "url": "https://github.com/expressjs/express", "language": "JavaScript", "expectedClass": "M", "note": "серверний фреймворк, багато прикладів і тестів" },
+  { "id": "flask",    "url": "https://github.com/pallets/flask", "language": "Python", "expectedClass": "M", "note": "вебфреймворк, значна документація" },
+  { "id": "gin",      "url": "https://github.com/gin-gonic/gin", "language": "Go", "expectedClass": "M", "note": "вебфреймворк Go" },
+  { "id": "gson",     "url": "https://github.com/google/gson", "language": "Java", "expectedClass": "M", "note": "бібліотека серіалізації, Java" },
+  { "id": "django",   "url": "https://github.com/django/django", "language": "Python", "expectedClass": "L", "note": "стрес-тест: великий репозиторій, може не вкластися в ліміти" }
+]

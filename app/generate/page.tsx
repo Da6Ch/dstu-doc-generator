@@ -87,6 +87,13 @@ function GeneratePageInner() {
       setErrorMsg((err as Error).message);
     } finally {
       setIsGenerating(false);
+      // Потік завершився (успішно чи з помилкою): позначаємо всі документи
+      // завершеними, щоб заглушки й індикатори не висіли вічно.
+      setDocs((prev) =>
+        Object.fromEntries(
+          Object.entries(prev).map(([id, doc]) => [id, { ...doc, done: true }])
+        )
+      );
     }
   }
 
@@ -158,17 +165,17 @@ function GeneratePageInner() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-10">
+    <main className="min-h-screen bg-white dark:bg-slate-950 px-4 py-10">
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
           <p className="text-sm text-slate-500">Репозиторій</p>
-          <p className="text-slate-200 font-mono text-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-mono text-sm">
             {repoUrl} <span className="text-slate-500">@ {branch}</span>
           </p>
         </div>
 
         <section>
-          <h2 className="text-lg font-semibold text-slate-100 mb-3">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
             Оберіть артефакти документації
           </h2>
           <ArtifactSelector selected={selected} onChange={setSelected} />
@@ -184,16 +191,16 @@ function GeneratePageInner() {
         </button>
 
         {statusMsg && (
-          <p className="text-sm text-slate-400">{statusMsg}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{statusMsg}</p>
         )}
-        {errorMsg && <p className="text-sm text-red-400">{errorMsg}</p>}
+        {errorMsg && <p className="text-sm text-red-600 dark:text-red-400">{errorMsg}</p>}
 
         {tree && (
-          <details className="rounded-lg border border-slate-700 bg-slate-900/50 p-4">
-            <summary className="flex items-center gap-2 cursor-pointer text-slate-200 text-sm font-medium">
+          <details className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-4">
+            <summary className="flex items-center gap-2 cursor-pointer text-slate-800 dark:text-slate-200 text-sm font-medium">
               <FolderTree size={15} /> Структура репозиторію
             </summary>
-            <pre className="mt-3 text-xs text-slate-400 whitespace-pre-wrap">
+            <pre className="mt-3 text-xs text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
               {renderTreePreview(tree)}
             </pre>
           </details>

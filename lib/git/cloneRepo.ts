@@ -15,6 +15,7 @@ export interface CloneResult {
   owner: string;
   repo: string;
   branch: string;
+  commit: string;
   cleanup: () => Promise<void>;
 }
 
@@ -64,5 +65,7 @@ export async function cloneRepo(
   const resolvedBranch =
     branch || (await git.currentBranch({ fs, dir, fullname: false })) || "main";
 
-  return { dir, owner, repo, branch: resolvedBranch, cleanup };
+  const commit = await git.resolveRef({ fs, dir, ref: "HEAD" });
+
+  return { dir, owner, repo, branch: resolvedBranch, commit, cleanup };
 }

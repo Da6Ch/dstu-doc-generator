@@ -46,11 +46,15 @@ export interface GenerationRequest {
 }
 
 /** Подія SSE, яку бекенд надсилає клієнту під час генерації */
-export type GenerationEvent =
+export type GenerationEvent = (
   | { type: "status"; stage: string; message: string }
   | { type: "tree"; tree: RepoTreeNode[] }
   | { type: "doc-start"; standard: DocStandardId; title: string }
   | { type: "doc-chunk"; standard: DocStandardId; delta: string }
   | { type: "doc-end"; standard: DocStandardId }
   | { type: "error"; message: string }
-  | { type: "done" };
+  | { type: "done" }
+) & {
+  /** Серверний час від початку запиту, мс (для вимірювань продуктивності) */
+  t?: number;
+};

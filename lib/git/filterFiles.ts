@@ -76,8 +76,8 @@ const EXTENSIONLESS_FILES: Record<string, string> = {
   makefile: "makefile",
 };
 
-const MAX_FILE_BYTES = 60_000; // обрізаємо надто великі файли
-const MAX_TOTAL_FILES = 400; // запобіжник для величезних репозиторіїв
+export const MAX_FILE_BYTES = 60_000; // обрізаємо надто великі файли
+export const MAX_TOTAL_FILES = 400; // запобіжник для величезних репозиторіїв
 
 export interface FilterOptions {
   gitignoreContent?: string;
@@ -107,7 +107,8 @@ export async function collectRepoFiles(
 
   async function walk(relPath: string): Promise<RepoTreeNode[]> {
     const absPath = `${dir}${relPath ? "/" + relPath : ""}`;
-    const entries = await fs.promises.readdir(absPath);
+    // Сортування гарантує детермінований порядок обходу незалежно від ОС/ФС
+    const entries = (await fs.promises.readdir(absPath)).sort();
     const nodes: RepoTreeNode[] = [];
 
     for (const entry of entries) {

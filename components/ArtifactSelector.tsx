@@ -30,8 +30,8 @@ export default function ArtifactSelector({
             key={standard.id}
             className={`flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors ${
               checked
-                ? "border-indigo-500 bg-indigo-950/40"
-                : "border-slate-700 bg-slate-800/50 hover:border-slate-600"
+                ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40"
+                : "border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-slate-400 dark:hover:border-slate-600"
             }`}
           >
             <input
@@ -41,11 +41,11 @@ export default function ArtifactSelector({
               className="mt-1 accent-indigo-500"
             />
             <div className="flex-1">
-              <div className="flex items-center gap-2 font-medium text-slate-100">
-                <FileText size={16} className="text-indigo-400" />
+              <div className="flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100">
+                <FileText size={16} className="text-indigo-600 dark:text-indigo-400" />
                 {standard.code} «{standard.title}»
               </div>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                 {standard.description}
               </p>
             </div>

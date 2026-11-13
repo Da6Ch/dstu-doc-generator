@@ -22,6 +22,7 @@ function sseEvent(event: GenerationEvent): string {
 }
 
 export async function POST(req: NextRequest) {
+  const t0 = Date.now();
   const body = (await req.json()) as GenerationRequest;
 
   if (!body.repoUrl || !body.standards?.length) {
@@ -38,7 +39,9 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       const send = (event: GenerationEvent) =>
-        controller.enqueue(encoder.encode(sseEvent(event)));
+        controller.enqueue(
+          encoder.encode(sseEvent({ ...event, t: Date.now() - t0 }))
+        );
 
       let cleanup: (() => Promise<void>) | undefined;
       try {
@@ -51,6 +54,11 @@ export async function POST(req: NextRequest) {
         const cloned = await cloneRepo(body.repoUrl, body.branch);
         const { dir, owner, repo } = cloned;
         cleanup = cloned.cleanup;
+        send({
+          type: "status",
+          stage: "cloned",
+          message: `Клонування завершено (коміт ${cloned.commit.slice(0, 7)}).`,
+        });
 
         send({
           type: "status",
@@ -89,11 +97,14 @@ export async function POST(req: NextRequest) {
             readme,
           });
 
-          await streamGeminiText(
+          const { interrupted } = await streamGeminiText(
             prompt,
             (delta) => send({ type: "doc-chunk", standard: standardId, delta }),
             abortController.signal
           );
+          if (interrupted) {
+            console.warn(`Документ ${standardId}: потік обірвався наприкінці.`);
+          }
 
           send({ type: "doc-end", standard: standardId });
         }

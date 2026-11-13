@@ -26,12 +26,18 @@ function getClient(): GoogleGenAI {
 /**
  * Виконує потоковий запит до Gemini та викликає onChunk для кожного
  * фрагмента тексту у міру надходження.
+ *
+ * Інколи потік обривається в самому кінці з помилкою "Incomplete JSON
+ * segment at the end" (останній шматок відповіді прийшов неповним). Якщо
+ * текст уже отримано, це не вважаємо фатальною помилкою: повертаємо
+ * interrupted=true, а документ показуємо в тому вигляді, в якому він
+ * прийшов.
  */
 export async function streamGeminiText(
   prompt: string,
   onChunk: (delta: string) => void,
   signal?: AbortSignal
-): Promise<void> {
+): Promise<{ interrupted: boolean }> {
   const ai = getClient();
 
   const stream = await ai.models.generateContentStream({
@@ -43,9 +49,23 @@ export async function streamGeminiText(
     },
   });
 
-  for await (const chunk of stream) {
-    if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
-    const text = chunk.text;
-    if (text) onChunk(text);
+  let received = false;
+  try {
+    for await (const chunk of stream) {
+      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+      const text = chunk.text;
+      if (text) {
+        received = true;
+        onChunk(text);
+      }
+    }
+  } catch (err) {
+    const message = (err as Error).message ?? "";
+    if (received && /Incomplete JSON segment/i.test(message)) {
+      console.warn("Потік Gemini завершився передчасно:", message);
+      return { interrupted: true };
+    }
+    throw err;
   }
+  return { interrupted: false };
 }

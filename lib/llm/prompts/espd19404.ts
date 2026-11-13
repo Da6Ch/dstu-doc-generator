@@ -1,12 +1,13 @@
-// lib/llm/prompts/dstu19404.ts
+// lib/llm/prompts/espd19404.ts
 // Промпт-шаблон «Пояснювальна записка» (ЄСПД, ГОСТ 19.404-78)
 
-export function buildEspd19404Prompt(params: {
-  owner: string;
-  repo: string;
-  digest: string;
-  readme?: string;
-}): string {
+import {
+  GROUNDING_RULES,
+  contextBlock,
+  type PromptBuilderParams,
+} from "./common";
+
+export function buildEspd19404Prompt(params: PromptBuilderParams): string {
   const { owner, repo, digest, readme } = params;
 
   return `Ти — технічний письменник, що складає офіційну документацію українською мовою
@@ -38,13 +39,10 @@ Markdown):
 Перелічи основні бібліотеки/фреймворки як джерела (з package.json чи
 аналогічного маніфесту).
 
-ВАЖЛИВО:
-- Пиши українською мовою, аналітичним, обґрунтовувальним стилем — це саме
-  ПОЯСНЕННЯ вибору рішень, а не просто опис функціоналу.
-- Спирайся на факти з коду/README нижче.
-- Виведи ЛИШЕ текст документа у форматі Markdown, без преамбул.
+Стиль: аналітичний, обґрунтовувальний — це саме ПОЯСНЕННЯ вибору рішень, а не
+просто опис функціоналу.
 
-${readme ? `## README проєкту\n${readme}\n\n` : ""}
-## Конспект коду репозиторію
-${digest}`;
+${GROUNDING_RULES}
+
+${contextBlock(digest, readme)}`;
 }

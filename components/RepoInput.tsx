@@ -44,7 +44,7 @@ export default function RepoInput({ onValidated }: RepoInputProps) {
   return (
     <div className="w-full max-w-xl space-y-4">
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
           Посилання на публічний GitHub-репозиторій
         </label>
         <input
@@ -55,12 +55,12 @@ export default function RepoInput({ onValidated }: RepoInputProps) {
             setState("idle");
           }}
           placeholder="https://github.com/owner/repository"
-          className="w-full rounded-lg bg-slate-800 border border-slate-700 px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
 
       <div>
-        <label className="flex items-center gap-1.5 text-sm font-medium text-slate-300 mb-1.5">
+        <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
           <GitBranch size={14} /> Гілка (необов'язково)
         </label>
         <input
@@ -68,7 +68,7 @@ export default function RepoInput({ onValidated }: RepoInputProps) {
           value={branch}
           onChange={(e) => setBranch(e.target.value)}
           placeholder="залиште порожнім — буде гілка за замовчуванням"
-          className="w-full rounded-lg bg-slate-800 border border-slate-700 px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
 
@@ -84,7 +84,7 @@ export default function RepoInput({ onValidated }: RepoInputProps) {
       </button>
 
       {state === "invalid" && (
-        <p className="text-sm text-red-400">{errorMsg}</p>
+        <p className="text-sm text-red-600 dark:text-red-400">{errorMsg}</p>
       )}
     </div>
   );
